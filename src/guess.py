@@ -1,6 +1,8 @@
 '''
-This class is the controller class for the guessing game.
-
+This module is the controller class for the guessing game.It imports DatabaseOperations and GamePlay
+classes from their respective modules.
+@see: DatabaseOperations
+@see: GamePlay
 Created on May 14, 2019
 
 @author: apoorvasharma
@@ -10,6 +12,7 @@ from stringDatabase import DatabaseOperations
 from game import GamePlay
 
 class GameController:
+    
     def __init__(self) :
         self.gameNumber =0
         self.guessWord ='----'
@@ -20,6 +23,10 @@ class GameController:
         self.guessType=""
         self.missedLetter =0
     def gameStart(self):
+        '''
+            This method is responsible for initiating the game.
+            @param self:
+        '''
         self.guessWord="----"
         self.missedLetter =0
         self.badGuess=0
@@ -45,6 +52,10 @@ class GameController:
             self.playGuess(ch)
             
     def gameSummary(self):
+        '''
+            This method is responsible for providing the game summary once the users decides to
+            quit.
+        '''
         print()
         finalScore=0
         tab ="\t" 
@@ -57,11 +68,12 @@ class GameController:
         print("Final Score of Player "+"{:.{}f}".format(finalScore,2))
         exit(0)
     
-    def printTable(self):
-        print()
-    
     # Responsible for playing the game   
     def playGuess(self,choice):
+        '''
+            This method is responsible for taking appropriate actions based on user choices.
+            @param choice:User choice
+        '''
         while choice!='q':
             if choice=='t':
                 self.tellME()
@@ -81,6 +93,9 @@ class GameController:
             
     # Responsible for guessing the game       
     def seekWord(self):
+        '''
+            This method is responsible for guessing word.
+        '''
         print("Word to guess: "+self.guessWord)
         x = input("Enter the word : ")
         if x.__eq__(self.word) :
@@ -96,6 +111,10 @@ class GameController:
             
     
     def seekletter(self):
+        '''
+            This method is responsible for guessing letters.
+            @param choice:User choice
+        '''
         print("Word to guess: "+self.guessWord)
         x = input("Enter the letter: ")
         counter =0
@@ -117,13 +136,26 @@ class GameController:
             print("Wrong guess. Better luck next time!!")
         
     def tellME(self):
+        '''
+            This method is responsible for tell Me Functionality.
+            @param choice:User choice
+        '''
         print("The word was "+self.word)
         self.caculateGameScore('t')
         self.gameStart()
     
     def quitME(self): 
+        '''
+            This method is responsible for Quit Functionality.
+            @param choice:User choice
+        '''
         self.gameStart()
     def caculateGameScore(self,optionCh):
+        '''
+            This method is responsible for score calculation. It creates object of class GamePlay which maintains specific game state.
+            @param optionCh:User choice
+            @see: GamePlay
+        '''
         
         currentGame =GamePlay(self.word,self.gameNumber,self.flipped,optionCh,self.guessWord,self.guessType,self.missedLetter,self.badGuess)
         gameScore = currentGame.returnFinalScore()
@@ -137,7 +169,10 @@ class GameController:
                 self.playGuess(optionCh)
     
     def upddateDictionary(self,currentGameScore):
-        
+        '''
+            This method is responsible for updating final score card once a game is finished.
+            @param currentGameScore:state of recently played game
+        '''
         index =currentGameScore["Game Number"]
         if index>self.finalSummary.__len__():
             self.finalSummary.insert(self.gameNumber-1,currentGameScore)
@@ -149,6 +184,7 @@ class GameController:
             y["Bad Guess"]=currentGameScore["Bad Guess"]
             self.finalSummary.pop(index-1)
             self.finalSummary.insert(index-1,y)
+
 
 cntrl = GameController() 
 cntrl.gameStart()
