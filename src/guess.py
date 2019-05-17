@@ -47,14 +47,13 @@ class GameController:
     def gameSummary(self):
         print()
         finalScore=0
-        blankstr1="   "
-        blankstr2=" "
-        print("Game "+" Word"+" Status"+" Bad Guesses"+ " Missed Letters"+" Score")
-        print("---- "+" ----"+" ------"+" -----------"+ " --------------"+" -----")
+        tab ="\t" 
+        print("Game\t Word\t Status\t  Bad Guesses\t Missed Letters\t Score")
+        print("----\t----\t ------\t -----------\t--------------\t-----")
         for temp in range(len(self.finalSummary)):
             y = self.finalSummary[temp]
             finalScore = y["Score"]+finalScore
-            print(str(y["Game Number"])+blankstr1+y["Word"]+blankstr2+y["Status"]+blankstr2+blankstr2+str(y["Bad Guess"])+blankstr1+str(y["Missed Letter"])+blankstr1+"{:.{}f}".format(y["Score"],2))
+            print(str(y["Game Number"])+tab+y["Word"]+tab+y["Status"]+tab+tab+str(y["Bad Guess"])+tab+tab+str(y["Missed Letter"])+tab+"{:.{}f}".format(y["Score"],2))
         print("Final Score of Player "+"{:.{}f}".format(finalScore,2))
         exit(0)
     
@@ -75,6 +74,10 @@ class GameController:
             confirm =input("Are you sure you want to exit the game?(y/n) ")
             if confirm=='y' or confirm=='Y':
                 self.gameSummary()
+            else:
+                choice = input("Enter the next operation : t=tell me,q =quit,l= for letter, g = guess ")
+                self.playGuess(choice)
+                
             
     # Responsible for guessing the game       
     def seekWord(self):
@@ -129,6 +132,9 @@ class GameController:
             confirm =input("Are you sure you want to exit the game?(y/n)")
             if confirm=='y' or confirm=='Y':
                 self.gameSummary()
+            else:
+                optionCh=input("Enter the next operation : t=tell me,q =quit,l= for letter, g = guess ")
+                self.playGuess(optionCh)
     
     def upddateDictionary(self,currentGameScore):
         
