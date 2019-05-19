@@ -1,18 +1,21 @@
-'''
-This module is the controller class for the guessing game.It imports DatabaseOperations and GamePlay
+"""
+This module is the main module for the guessing game.It imports DatabaseOperations and GamePlay
 classes from their respective modules.
 @see: DatabaseOperations
 @see: GamePlay
 Created on May 14, 2019
 
 @author: apoorvasharma
-'''
+"""
 import random
 from stringDatabase import DatabaseOperations
 from game import GamePlay
 
 class GameController:
-    
+    '''
+        This class is the controller class for the guessing game
+        @param self:
+    '''
     def __init__(self) :
         self.gameNumber =0
         self.guessWord ='----'
@@ -30,7 +33,7 @@ class GameController:
         self.guessWord="----"
         self.missedLetter =0
         self.badGuess=0
-        
+        self.flipped =0
         if self.gameNumber ==0:
             print("Welcome to the guessing game")
             print("Game Level 1")
@@ -44,13 +47,14 @@ class GameController:
         op = DatabaseOperations()
         wordList  = op.loadFile()
         print()
-        ch =input("Enter your choice ")
         while self.gameNumber <100:
             self.gameNumber =int(self.gameNumber)+1
             indextoChoose =random.randint(0,wordList.__len__())
             self.word = wordList[indextoChoose]
-            self.playGuess(ch)
-            
+            ch =input("Enter your choice ")
+            self.playGuess(ch.lower())
+                
+                
     def gameSummary(self):
         '''
             This method is responsible for providing the game summary once the users decides to
@@ -81,13 +85,15 @@ class GameController:
                 self.seekletter()
             elif choice=='g':
                 self. seekWord()
-            choice = input("Enter the next operation : t=tell me,q =quit,l= for letter, g = guess ")
+            choice = input("Enter the next operation : t=tell me,q =quit,l= for letter, g = guess ").lower()
         if choice=='q':
             confirm =input("Are you sure you want to exit the game?(y/n) ")
             if confirm=='y' or confirm=='Y':
+                if self.flipped>0:
+                    self.caculateGameScore('t') # will deduct point in similar fashion of tell me for an ongoing game.
                 self.gameSummary()
             else:
-                choice = input("Enter the next operation : t=tell me,q =quit,l= for letter, g = guess ")
+                choice = input("Enter the next operation : t=tell me,q =quit,l= for letter, g = guess ").lower()
                 self.playGuess(choice)
                 
             
@@ -97,7 +103,7 @@ class GameController:
             This method is responsible for guessing word.
         '''
         print("Word to guess: "+self.guessWord)
-        x = input("Enter the word : ")
+        x = input("Enter the word : ").lower()
         if x.__eq__(self.word) :
             print("You've guessed the correct word.")
             self.guessType='c'
@@ -116,7 +122,7 @@ class GameController:
             @param choice:User choice
         '''
         print("Word to guess: "+self.guessWord)
-        x = input("Enter the letter: ")
+        x = input("Enter the letter: ").lower()
         counter =0
         self.flipped = self.flipped+1
         for y in range(len(self.word)):
@@ -185,6 +191,6 @@ class GameController:
             self.finalSummary.pop(index-1)
             self.finalSummary.insert(index-1,y)
 
-
-cntrl = GameController() 
-cntrl.gameStart()
+if __name__=="__main__":
+    cntrl = GameController() 
+    cntrl.gameStart()

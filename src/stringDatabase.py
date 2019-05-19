@@ -7,7 +7,7 @@ Created on May 14, 2019
 
 class DatabaseOperations:
     '''
-        Responsible for reading the  four_letters text
+    Responsible for reading the  four_letters text
     '''
     # Responsible for reading the  four_letters text
     def loadFile(self):
