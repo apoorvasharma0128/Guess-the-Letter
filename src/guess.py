@@ -1,15 +1,22 @@
-'''
-This class is the controller class for the guessing game.
+"""
+This module is the main module for the guessing game.It imports DatabaseOperations and GamePlay
+classes from their respective modules.
+@see: DatabaseOperations
+@see: GamePlay
 
 Created on May 14, 2019
 
 @author: apoorvasharma
-'''
+"""
 import random
 from stringDatabase import DatabaseOperations
 from game import GamePlay
 
 class GameController:
+    '''
+        This class is the controller class for the guessing game
+        @param self:
+    '''
     def __init__(self) :
         self.gameNumber =0
         self.guessWord ='----'
@@ -20,10 +27,14 @@ class GameController:
         self.guessType=""
         self.missedLetter =0
     def gameStart(self):
+        '''
+            This method is responsible for initiating the game.
+            @param self:
+        '''
         self.guessWord="----"
         self.missedLetter =0
         self.badGuess=0
-        
+        self.flipped =0
         if self.gameNumber ==0:
             print("Welcome to the guessing game")
             print("Game Level 1")
@@ -37,32 +48,37 @@ class GameController:
         op = DatabaseOperations()
         wordList  = op.loadFile()
         print()
-        ch =input("Enter your choice ")
         while self.gameNumber <100:
             self.gameNumber =int(self.gameNumber)+1
             indextoChoose =random.randint(0,wordList.__len__())
             self.word = wordList[indextoChoose]
-            self.playGuess(ch)
-            
+            ch =input("Enter your choice ")
+            self.playGuess(ch.lower())
+                
+                
     def gameSummary(self):
+        '''
+            This method is responsible for providing the game summary once the users decides to
+            quit.
+        '''
         print()
         finalScore=0
-        blankstr1="   "
-        blankstr2=" "
-        print("Game "+" Word"+" Status"+" Bad Guesses"+ " Missed Letters"+" Score")
-        print("---- "+" ----"+" ------"+" -----------"+ " --------------"+" -----")
+        tab ="\t" 
+        print("Game\t Word\t Status\t  Bad Guesses\t Missed Letters\t Score")
+        print("----\t----\t ------\t -----------\t--------------\t-----")
         for temp in range(len(self.finalSummary)):
             y = self.finalSummary[temp]
             finalScore = y["Score"]+finalScore
-            print(str(y["Game Number"])+blankstr1+y["Word"]+blankstr2+y["Status"]+blankstr2+blankstr2+str(y["Bad Guess"])+blankstr1+str(y["Missed Letter"])+blankstr1+"{:.{}f}".format(y["Score"],2))
+            print(str(y["Game Number"])+tab+y["Word"]+tab+y["Status"]+tab+tab+str(y["Bad Guess"])+tab+tab+str(y["Missed Letter"])+tab+"{:.{}f}".format(y["Score"],2))
         print("Final Score of Player "+"{:.{}f}".format(finalScore,2))
         exit(0)
     
-    def printTable(self):
-        print()
-    
     # Responsible for playing the game   
     def playGuess(self,choice):
+        '''
+            This method is responsible for taking appropriate actions based on user choices.
+            @param choice:User choice
+        '''
         while choice!='q':
             if choice=='t':
                 self.tellME()
@@ -70,16 +86,25 @@ class GameController:
                 self.seekletter()
             elif choice=='g':
                 self. seekWord()
-            choice = input("Enter the next operation : t=tell me,q =quit,l= for letter, g = guess ")
+            choice = input("Enter the next operation : t=tell me,q =quit,l= for letter, g = guess ").lower()
         if choice=='q':
             confirm =input("Are you sure you want to exit the game?(y/n) ")
             if confirm=='y' or confirm=='Y':
+                if self.flipped>0:
+                    self.caculateGameScore('t') # will deduct point in similar fashion of tell me for an ongoing game.
                 self.gameSummary()
+            else:
+                choice = input("Enter the next operation : t=tell me,q =quit,l= for letter, g = guess ").lower()
+                self.playGuess(choice)
+                
             
     # Responsible for guessing the game       
     def seekWord(self):
+        '''
+            This method is responsible for guessing word.
+        '''
         print("Word to guess: "+self.guessWord)
-        x = input("Enter the word : ")
+        x = input("Enter the word : ").lower()
         if x.__eq__(self.word) :
             print("You've guessed the correct word.")
             self.guessType='c'
@@ -93,8 +118,12 @@ class GameController:
             
     
     def seekletter(self):
+        '''
+            This method is responsible for guessing letters.
+            @param choice:User choice
+        '''
         print("Word to guess: "+self.guessWord)
-        x = input("Enter the letter: ")
+        x = input("Enter the letter: ").lower()
         counter =0
         self.flipped = self.flipped+1
         for y in range(len(self.word)):
@@ -114,13 +143,26 @@ class GameController:
             print("Wrong guess. Better luck next time!!")
         
     def tellME(self):
+        '''
+            This method is responsible for tell Me Functionality.
+            @param choice:User choice
+        '''
         print("The word was "+self.word)
         self.caculateGameScore('t')
         self.gameStart()
     
     def quitME(self): 
+        '''
+            This method is responsible for Quit Functionality.
+            @param choice:User choice
+        '''
         self.gameStart()
     def caculateGameScore(self,optionCh):
+        '''
+            This method is responsible for score calculation. It creates object of class GamePlay which maintains specific game state.
+            @param optionCh:User choice
+            @see: GamePlay
+        '''
         
         currentGame =GamePlay(self.word,self.gameNumber,self.flipped,optionCh,self.guessWord,self.guessType,self.missedLetter,self.badGuess)
         gameScore = currentGame.returnFinalScore()
@@ -129,9 +171,15 @@ class GameController:
             confirm =input("Are you sure you want to exit the game?(y/n)")
             if confirm=='y' or confirm=='Y':
                 self.gameSummary()
+            else:
+                optionCh=input("Enter the next operation : t=tell me,q =quit,l= for letter, g = guess ")
+                self.playGuess(optionCh)
     
     def upddateDictionary(self,currentGameScore):
-        
+        '''
+            This method is responsible for updating final score card once a game is finished.
+            @param currentGameScore:state of recently played game
+        '''
         index =currentGameScore["Game Number"]
         if index>self.finalSummary.__len__():
             self.finalSummary.insert(self.gameNumber-1,currentGameScore)
@@ -144,5 +192,6 @@ class GameController:
             self.finalSummary.pop(index-1)
             self.finalSummary.insert(index-1,y)
 
-cntrl = GameController() 
-cntrl.gameStart()
+if __name__=="__main__":
+    cntrl = GameController() 
+    cntrl.gameStart()
